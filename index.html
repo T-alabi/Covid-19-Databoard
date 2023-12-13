@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Project 1</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AkYoffyJSEkdeRb6oMINqY7QJsG4C2IrEwoq2P7mke8x6VXQehB_8XP0xvxk0mAh'></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="styles.js"></script>
+    
+</head>
+<body>
+    <style>
+         #emailPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #87e28f;
+            z-index: 1000;
+        }
+        .btn-no-bg {
+            background-color: transparent !important;
+            border: none;
+            color: inherit;
+            padding: 0;
+        }
+        .list-group-item {
+            background: transparent !important; /* Set background to transparent */
+            border: none !important; /* Remove border */
+            box-shadow: none !important; /* Remove box shadow */
+        }
+        .innerMenu{
+            margin-left: 5px;;
+        }
+        .container1 {
+            display: flex; /* Use flexbox to create a horizontal layout */
+        }
+
+        .menu-container {
+            width: 280px;
+            background-color: #007d0a;
+            height: 100vh;
+        }
+
+        .content-container {
+            flex-grow: 1; /* Allow content to take up remaining space */
+            padding: 20px;
+        }
+        .content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 20px;
+    }
+
+    .box-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-top: 0;
+    }
+
+    .box {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin: 10px;
+        flex: 1;
+        box-sizing: border-box;
+        min-width: calc(50% - 20px);
+        margin-top: 0;
+        /*min-height: calc(90% - 20px);*/
+
+    }
+    #map {
+    width: 100%;
+    }
+    /*#GraphGoesHere{
+        height: 300px;
+    }*/
+    .highlight-cell {
+    background-color: red;
+}
+#chart-container {
+  display: flex;
+  justify-content: space-between;  /* Adjust as needed: space-around, space-evenly, etc. */
+  align-items: center;  /* Adjust as needed: flex-start, flex-end, center, etc. */
+  width: 48%;  /* Adjust the width of each chart container as needed */
+  /*height: 400px;   Set the height as needed */
+  margin: 5px;  /* Adjust margin between the charts */
+}
+.chart {
+  width: 48%; /* Adjust the width as needed */
+  /*height: 400px;  Set the height as needed */
+  margin: 5px; /* Adjust margin between the charts */
+}
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+    </style>
+    <div class = "container1">
+        <!-- SIDE MENU BAR -->
+        <div class="flex-shrink-0 p-3" style="width: 200px; min-height: 100vh; background-color: #007d0a;">
+            <h1>Menu</h1>
+            <!-- INNER MENU -->
+            <div>
+                <ul class="list-group list-group-flush ">
+                    <li class="list-group-item">
+                        <button class=" align-items-center  btn-no-bg" data-bs-toggle="collapse" data-bs-target="#file-collapse" aria-expanded="false">File</button>
+                        <div class="collapse" id="file-collapse">
+                            <ul class="list-group list-group-flush fw-normal pb-1 small">
+                                <li  id = "csvUploadButton" class="list-group-item innerMenu"><a href="#"  class="link-dark d-inline-flex text-decoration-none rounded">Load CSV</a></li>
+                                <li id ="DBloginButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Login to DB</a></li>
+                                <li id="DBData1" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded"> Load DB Data 1</a></li>
+                                <li id="DBData2" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded"> Load DB Data 2</a></li>
+                                <li id = "LogoutDBButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Logout DB</a></li>
+                                <li id = "exitButton"class="list-group-item innerMenu"><a onclick="closeWindow();" href="#" class="link-dark d-inline-flex text-decoration-none rounded">Exit</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    
+                    <li class="list-group-item">
+                        <button class=" align-items-center  btn-no-bg" data-bs-toggle="collapse" data-bs-target="#view-collapse" aria-expanded="false">View</button>
+                        <div class="collapse" id="view-collapse">
+                            <ul class="list-group list-group-flush fw-normal pb-1 small">
+                                <li id="LineButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Line</a></li>
+                                <li id="PieButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Pie</a></li>
+                                <li id="BarButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Bar</a></li>
+                                <li id="MapButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Map</a></li>
+                                <li class="list-group-item">
+                                    <!--NEW CHARTS SUB MENU-->
+                                    <button class=" align-items-center  btn-no-bg" data-bs-toggle="collapse" data-bs-target="#NEWCHART-collapse" aria-expanded="false">New Charts</button>
+                                    <div class="collapse" id="NEWCHART-collapse">
+                                        <ul class="list-group list-group-flush fw-normal pb-1 small">
+                                            <li  id = "geoChartButton" class="list-group-item innerMenu"><a href="#"  class="link-dark d-inline-flex text-decoration-none rounded">Geo Chart</a></li>
+                                            <li id ="BoxPlotButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Boxplot</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                            
+                        </div>
+
+                    </li>
+                    <li class="list-group-item">
+                        <button class=" align-items-center  btn-no-bg" data-bs-toggle="collapse" data-bs-target="#settings-collapse" aria-expanded="false">Settings</button>
+                        <div class="collapse" id="settings-collapse">
+                            <ul class="list-group list-group-flush fw-normal pb-1 small">
+                                <li id ="UserInfoButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">User Info</a></li>
+                                <li id ="userSettingsButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">User Settings</a></li>
+                                <li onclick="showEmailPopup()">Open Email Popup</li>
+                            </ul>
+                        </div>
+
+                    </li>
+                    <li class="list-group-item">
+                        <button class=" align-items-center  btn-no-bg" data-bs-toggle="collapse" data-bs-target="#help-collapse" aria-expanded="false">Help</button>
+                        <div class="collapse" id="help-collapse">
+                            <ul class="list-group list-group-flush fw-normal pb-1 small">
+                                <li id="infoButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Info</a></li>
+                                <li id="clientButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Client</a></li>
+                                <li id="ManualButton" class="list-group-item innerMenu"><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Technical Manual</a></li>
+
+                            </ul>
+                        </div>
+
+                    </li>
+                    <li id="clearButton" class="list-group-item innerMenu ">Clear Contents</li>
+                </ul>
+            </div>
+            <div id="UserLoginMessage"></div>
+        </div>
+
+        <!--RIGHT SIDE CONTENT-->
+        <div class="content-container">
+            <div class="box" id = "graphDIV">
+                <h4 class = "text-center">Graph Display</h3>
+                <p id="NoDataMessage"></p>
+                <div id="GraphGoesHere"></div>
+                <div id="map"></div>
+                <div id="chart-container " class="flex-container">
+                    <div id="BarChartGoesHere" class="chart"></div>
+                    <div id="PieChartGoesHere" class="chart"></div>
+                </div>
+                
+            </div>
+            <div class="box message-area-box">
+                        <h4 class = "text-center">Message Area</h3>
+
+                            <div class = "text-center"id ="csvDataDisplay"></div>
+                            <div class = "text-center DBLoginDisplay" id="DBLoginDisplay"></div>
+                            <div class="text-center returnMessage" id="returnMessage"></div>
+                            <div id="emailPopup">
+                                <label for="toEmail">To:</label>
+                                <input type="email" id="toEmail" placeholder="Enter email address" required>
+                        
+                                <div>
+                                    <label>Subject:</label>
+                                    <span id="emailSubject">xxxx’s DV preference</span>
+                                </div>
+                        
+                                <div>
+                                    <label>Email Content:</label>
+                                    <span id="emailContent"></span>
+                                </div>
+                        
+                                <button onclick="cancelEmail()">Cancel</button>
+                                <button onclick="submitEmail()">Submit</button>
+                            </div>
+                    </div>
+            <div>
+                
+                <div class="box-container">
+                    <!--SECOND BOX ON THE FIRST ROW-->
+                    <div class="box data-selection-box">
+                        <h4 class = "text-center">Data Selection</h3><br>
+                        <form>
+                            <p class = "text-center">Please select one of the following choice,
+                                and then run one of the graph in the View menu. Note: The empty, NULL or NaN value 
+                                will be excluded:</p>
+                            <input type="radio" id="AvgWages" name="graph" value="AvgWages">
+                            <label for="AvgWages">Avg Rate (Bar, Line)</label><br>
+
+                            <input type="radio" id="caseRate" name="graph" value="caseRate">
+                            <label for="caseRate">Case Rate (Bar, Pie)</label><br>
+
+                            <input type="radio" id="deathRate" name="graph" value="deathRate">
+                            <label for="deathRate">Death Rate (Bar, Pie)</label>
+
+                        </br></br><p>Use these buttons for 2 graphs at a time</p>
+                            <input type="radio" id="death2Graph" , name="graph" value="death2Graph">
+                            <label for="death2Graph">Deaths (Bar & Pie)</label></br>
+
+                            <input type="radio" id="cases2Graph" , name="graph" value="cases2Graph">
+                            <label for="cases2Graph">Cases (Bar & Pie)</label>
+                        </form>
+                    </div>
+
+                    <div class="box table-box" >
+                        <h4 class = "text-center">Google Table</h4></br></br>
+                            <div id="slider"><p></br>This is the CaseNUM SLider</p></div>
+                            <p id="googleTableTitle"></p>
+                            <div id="googleTableContainer"></div>
+                    </br></br><div id="slider2"><p></br>This is the DeathNUM SLider</p></div>
+                            
+                    </div>
+                    
+                </div>
+            </div>
+           
+            
+            <div class="csvUpload d-none" id="ShowCSVUpload">
+                <form id = "CSVForm" action="upload.php" method="post" enctype="multipart/form-data" >
+                    Uplaod a CSV file:
+                    <input type="file" class = "fileToUpload"name = "fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Ok" name="submit">
+                </form>
+            </div>
+            
+
+        </div>
+    </div>
+    <!--END OF MENU BAR-->
+
+    <div class="container"></div>
+    
+    <!--USED TO KEEP UPLOAD CSV ON THE SAME PAGE-->
+
+    <script>
+      
+        //EXIT BUTTON
+function closeWindow() {
+    location.reload();
+
+}
+
+
+        $(document).ready(function () {
+            $('#DBLoginForm').submit(function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'DBCheck.php',
+                    data: formData,
+                    processData: false,  // Set processData to false
+                    contentType: false,  // Set contentType to false
+                    success: function (data) {
+                        $('#DBLoginDisplay').html(data); // placeholder
+                    }
+                });
+            });
+        });
+    </script>
+
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+    let twoCharts = false;
+    var chart;
+    var chart2;
+    var jsonData;
+    let isDataLoaded = false;
+ document.addEventListener('DOMContentLoaded', function () {
+    var csvButton = document.getElementById("csvUploadButton");
+    csvButton.addEventListener('click', function () {
+        var popupContent1 = `
+            <div class="csvUpload d-none" id="ShowCSVUpload">
+                <form id="CSVForm" action="upload.php" method="post" enctype="multipart/form-data">
+                    Upload a CSV file:
+                    <input type="file" class="fileToUpload" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Ok" name="submit">
+                </form>
+            </div>`;
+
+        // Create a popup window with the content
+        var popupWindow = window.open('', 'PopupWindow', 'width=600,height=400');
+        popupWindow.document.write(popupContent1);
+
+        // Handle the form submission using AJAX
+        var csvForm = popupWindow.document.getElementById('CSVForm');
+        csvForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(csvForm);
+            // Create an AJAX request to submit the form data to the PHP page
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'upload.php', true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Close the popup window FIRST to avoid confusion
+                    popupWindow.close();
+                   
+                     jsonData = JSON.parse(xhr.responseText);
+
+                    // Call the handleCSVUpload function with the parsed JSON data
+                    handleCSVUpload(jsonData);
+                } else {
+                    // Handle errors if any
+                }
+            };
+            xhr.send(formData);
+        });
+    });
+});
+
+function showEmailPopup() {
+            document.getElementById("emailPopup").style.display = "block";
+        }
+
+        function cancelEmail() {
+            document.getElementById("emailPopup").style.display = "none";
+        }
+
+        function submitEmail() {
+    // Get values and send to the backend (PHP script)
+    var toEmail = document.getElementById("toEmail").value;
+    var emailSubject = document.getElementById("emailSubject").innerText;
+    var emailContent = document.getElementById("emailContent").innerText;
+
+    // You can use AJAX to send data to the PHP script
+    // Example using jQuery.ajax:
+    $.ajax({
+        type: 'POST',
+        url: 'sendEmail.php',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            toEmail: toEmail,
+            emailSubject: emailSubject,
+            emailContent: emailContent,
+        }),
+        success: function (data) {
+            console.log('Success:', data);
+            // Optionally, close the popup after successful submission
+            cancelEmail();
+        },
+        error: function (xhr, status, error) {
+            console.error('Error:', error);
+            // Log detailed error information to the console
+            console.log('XHR:', xhr);
+            console.log('Status:', status);
+        },
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  var BoxPlotButton =  document.getElementById("BoxPlotButton");
+  BoxPlotButton.addEventListener('click', function() {
+    var boxplotData = [];
+    var margin = { top: 10, right: 30, bottom: 30, left: 40 },
+  width = 400 - margin.left - margin.right,
+  height = 400 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#GraphGoesHere")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+    if (isDBloaded) {
+        // set the dimensions and margins of the graph
+
+var data = sendDatatable();
+data.forEach(function (rowData) {
+  boxplotData.push(rowData[4]);
+});
+
+console.log(boxplotData);
+    } else {
+        console.log("Boxplot CSV");
+        data = jsonData;
+        selectedValue = getSelectedRadioButtonValue('graph');
+
+        data.forEach(function (rowData) {
+            var category;
+            if (selectedValue === 'deathRate') {
+                boxplotData.push(parseInt(rowData[5]));
+            } else {
+                boxplotData.push(parseInt(rowData[4]))
+            }
+        });
+        console.log(boxplotData);
+    }
+
+// Compute summary statistics used for the box:
+var data_sorted = boxplotData.sort(d3.ascending)
+var q1 = d3.quantile(data_sorted, 0.25)
+var median = d3.quantile(data_sorted, 0.5)
+var q3 = d3.quantile(data_sorted, 0.75)
+var interQuantileRange = q3 - q1
+var min = q1 - 1.5 * interQuantileRange
+var max = q3 + 1.5 * interQuantileRange
+
+// Show the Y scale
+var y = d3.scaleLinear()
+  .domain([0, d3.max(boxplotData)]) // Adjust the domain based on your data range
+  .range([height, 0]);
+svg.call(d3.axisLeft(y));
+
+// a few features for the box
+var center = width / 2;
+var boxWidth = 100;
+
+// Show the main vertical line
+svg.append("line")
+  .attr("x1", center)
+  .attr("x2", center)
+  .attr("y1", y(min))
+  .attr("y2", y(max))
+  .attr("stroke", "black");
+
+// Show the box
+svg.append("rect")
+  .attr("x", center - boxWidth / 2)
+  .attr("y", y(q3))
+  .attr("height", y(q1) - y(q3))
+  .attr("width", boxWidth)
+  .attr("stroke", "black")
+  .style("fill", "#69b3a2");
+
+// show median, min, and max horizontal lines
+svg.selectAll("toto")
+  .data([min, median, max])
+  .enter()
+  .append("line")
+  .attr("x1", center - boxWidth / 2)
+  .attr("x2", center + boxWidth / 2)
+  .attr("y1", function (d) { return (y(d)) })
+  .attr("y2", function (d) { return (y(d)) })
+  .attr("stroke", "black");
+
+  });
+});
+var value1 = 0;
+var value2 = 0;
+var averagesRow = [];
+var saveSlider1 = 0;
+var saveSlider2 = 0;
+var col4NewAvg;
+var col5NewAvg;
+
+function getValues(value1, value2){
+    return value1, value2;
+}
+
+//grab php values for slider here!
+function grabUserSettings(){
+    $.ajax({
+            type: 'GET',
+            url: 'grabUserSettings.php',
+            dataType: 'json',
+            success: function(response) {
+                // Assuming response is an object with two integer properties: value1 and value2
+                  value1 = response.value1;
+                  value2 = response.value2;
+
+                // Now you can use these values in your script
+                console.log('Received values:', value1, value2);
+                getValues(value1, value2);
+                //getValues(value1, value2);
+            },
+            error: function(error) {
+                console.error("Error in Ajax request", error);
+            }
+        });
+        
+}
+
+
+// In your main page JavaScript
+function handleCSVUpload(jsonData) {
+    google.charts.load("current", { packages: ["table"] });
+    google.charts.setOnLoadCallback(function() {
+        var data = new google.visualization.DataTable();
+
+        var headers = jsonData[0];
+      
+        var testDataTypes = {
+            0: "date",
+            1: "string",
+            2: "string",
+            3: "number",
+            4: "number",
+            5: "number"
+        };
+
+
+         for (var key in headers) {
+            var dataType = testDataTypes[key] || "string"; // Default to string if data type not defined
+            data.addColumn(dataType, headers[key]);
+        }
+
+        function isNumeric(value) {
+    return !isNaN(parseFloat(value)) && isFinite(value);
+}
+        for (var i = 1; i < jsonData.length; i++) {
+    var row = [];
+    for (var key in jsonData[i]) {
+        if (testDataTypes[key] === "date") {
+            // Convert date strings to JavaScript Date objects
+            row.push(new Date(jsonData[i][key]));
+        } else if (testDataTypes[key] === "number") {
+            // Check if the value is a valid number before adding it
+            if (isNumeric(jsonData[i][key])) {
+                row.push(Number(jsonData[i][key]));
+            } else {
+                // Handle non-numeric values here, e.g., set to NaN or a default value
+                row.push(NaN); // You can customize this based on your needs
+            }
+        } else {
+            row.push(jsonData[i][key]);
+        }
+    }
+    data.addRow(row);
+}
+
+    //conditional formatting with averages stuff
+    console.log(jsonData.length);
+    let colsum4 = 0;
+    let colsum5 = 0;
+    var col4 = [];
+    var col5 = [];
+
+    for (var i = 1; i<jsonData.length; i++ ){
+        //console.log(jsonData[i]);
+        colsum4 +=parseInt(jsonData[i][4]);
+        colsum5  +=parseInt(jsonData[i][5]);
+        col4.push(jsonData[i][4]);
+        col5.push(jsonData[i][5]);
+    }
+    //the data has no outliers so thhis doesnt do anything for this data set: 
+    var q1 = d3.quantile(col4.sort(d3.ascending), 0.25);
+    var q3 = d3.quantile(col4.sort(d3.ascending), 0.75);
+    console.log(q1);
+    console.log(q3);
+    var iqr = q3 - q1;
+    // Set thresholds for outliers
+    var lowerThreshold = q1 - 1.5 * iqr;
+    var upperThreshold = q3 + 1.5 * iqr;
+    var col4Outlier = new google.visualization.ColorFormat();
+    col4Outlier.addRange(upperThreshold, null, 'black', 'yellow');
+    col4Outlier.addRange(0, lowerThreshold, 'black', 'yellow');
+    col4Outlier.format(data, 4);
+
+    var q15 = d3.quantile(col4.sort(d3.ascending), 0.25);
+    var q35 = d3.quantile(col4.sort(d3.ascending), 0.75);
+    console.log(q15);
+    console.log(q35);
+    var iqr5 = q35 - q15;
+    // Set thresholds for outliers
+    var lowerThreshold5 = q15 - 1.5 * iqr5;
+    var upperThreshold5 = q35 + 1.5 * iqr5;
+    var col5Outlier = new google.visualization.ColorFormat();
+    col5Outlier.addRange(upperThreshold5, null, 'black', 'yellow');
+    col5Outlier.addRange(0, lowerThreshold5, 'black', 'yellow');
+    col5Outlier.format(data, 5);
+
+    
+     grabUserSettings();
+     console.log("value 1? ", value1);
+
+    var averageLastColumn4 = Math.ceil(colsum4 / jsonData.length);
+    var averageLastColumn5 = Math.ceil(colsum5 / jsonData.length);
+
+    /*if(col4NewAvg != 0){
+        averageLastColumn4 = col4NewAvg;
+        averageLastColumn5 = col5NewAvg;
+        console.log("var changes, col4: ", averageLastColumn4);
+    }*/
+ 
+
+    var table = new google.visualization.Table(document.getElementById("googleTableContainer"));
+    isDataLoaded = true;
+    var sliderRedo = false;
+    //conditonal formattting portion
+    var formatter4 = new google.visualization.ColorFormat();
+    var formatting4EDITED = new google.visualization.ColorFormat();
+    formatter4.addRange(parseInt(averageLastColumn4),null, 'white', 'red' );
+    formatter4.format(data, 4);
+
+    var formatter5 =  new google.visualization.ColorFormat();
+    formatter5.addRange(parseInt(averageLastColumn5), null, 'black', 'green');
+    formatter5.format(data, 5);
+
+   //get the saved values from the DB!
+   if(isDBloaded){
+
+   }
+
+    //table.draw(data, {width: "100%",height: "100%"});
+    console.log("Its redrawing the table");
+    table.draw(data, {allowHtml: true, showRowNumber: true, width: '100%', height: '100%'});
+
+      // Initialize the jQuery UI Slider
+      var numRows = data.getNumberOfRows()
+      var columnData = [];//col4
+      var columnData2 = [];//col5
+    for (var i = 1; i < numRows; i++) {
+        columnData.push(data.getValue(i, 4));
+    }
+    saveSlider1 = averageLastColumn4;
+    saveSlider2 = averageLastColumn5;
+    $(document).ready(function () {
+        $("#slider").slider({
+    range: "min",
+    min: Math.min(...columnData),
+    max: Math.max(...columnData),
+
+    value: averageLastColumn4, // Initial slider value set to the average
+    slide: function (event, ui) {
+        console.log("Slider value: " + ui.value);
+        sliderRedo = true;   
+        saveSlider1 = ui.value;
+        redrawTable(data, ui.value, formatter4, 4);
+    }
+});
+
+});
+//SLIDER 2 stuff!
+for (var i = 1; i < numRows; i++) {
+        columnData2.push(data.getValue(i, 5));
+    }
+$(document).ready(function () {
+        $("#slider2").slider({
+    range: "min",
+    min: Math.min(...columnData2),
+    max: Math.max(...columnData2),
+    value: averageLastColumn5, // Initial value set to the average
+    slide: function (event, ui2) {
+        console.log("Slider DEATH value: " + ui2.value);
+        sliderRedo = true;   
+        saveSlider2 = ui2.value;
+        redrawTable(data, ui2.value, formatter5, 5);
+    }
+});
+
+});
+
+
+    });
+}
+function redrawTable(redoData, newAVG, formatterNumber, formNum) {
+    var table = new google.visualization.Table(document.getElementById("googleTableContainer"));
+
+    console.log(jsonData.length);
+    let colsum4 = 0;
+    let colsum5 = 0;
+    for (var i = 1; i<jsonData.length; i++ ){
+        //console.log(jsonData[i]);
+        colsum4 +=parseInt(jsonData[i][4]);
+        colsum5  +=parseInt(jsonData[i][5]);
+    }
+    const averageLastColumn4 = Math.ceil(colsum4 / jsonData.length);
+    const averageLastColumn5 = Math.ceil(colsum5 / jsonData.length);
+
+ 
+    var formatterName = new google.visualization.ColorFormat();
+    if(formNum = 5){
+        formatterName.addRange(parseInt(newAVG),null, 'white', 'green' );
+    }else{
+        formatterName.addRange(parseInt(newAVG),null, 'white', 'red' );
+    }
+    formatterName.format(redoData, formNum);
+
+    table.draw(redoData, {allowHtml: true, showRowNumber: true, width: '100%', height: '100%'});
+}
+//conditonal formatting dunction
+function applyConditionalFormatting(data){
+    var numRows = data.getNumberOfRows();
+    var numCols = data.getNumberOfColumns();
+  
+    for(var i = 0; i < numRows; i++){
+        for(var j = 4; j<6; j++){
+            var cellValue=data.getValue(i,j);
+            var avgVal = parseInt(averagesRow[j]);
+            console.log(cellValue, " vs " , avgVal);
+            if (!isNaN(cellValue) && cellValue > avgVal) {
+                // Apply formatting to the cell
+                console.log('Before formatting:', data.getFormattedValue(i, j)); // Log the current formatted value
+               // data.setFormattedValue(i, j, ''); // Clear existing formatted value
+
+               data.getFormattedValue(i, j, { style: 'background-color: red' });
+               console.log(i,j);
+               cellElement.style.backgroundColor = 'red';
+            }
+        }
+    }
+
+}
+
+document.getElementById("clearButton").addEventListener("click", function () {
+            // Clear the content of the specified divs
+            document.getElementById("GraphGoesHere").innerHTML = "";
+            document.getElementById("map").innerHTML = "";
+            document.getElementById("BarChartGoesHere").innerHTML = "";
+            document.getElementById("PieChartGoesHere").innerHTML = "";
+
+        });
+
+//IS DATA LOADED FUNCTION
+function dataLoaded(){
+    if (!isDataLoaded) {
+        // Display a message in the graph area
+        document.getElementById("NoDataMessage").textContent = "Please load data first";
+    }
+}
+
+//is chart a good choice functions
+function isLineChartAllowed(data) {
+    return false;
+}
+
+//LISTENERS FOR SUB VIEW SUBMENU
+// line event listener
+document.addEventListener('DOMContentLoaded', function () {
+  var LineButton =  document.getElementById("LineButton");
+  LineButton.addEventListener('click', function() {
+    if (isLineChartAllowed(jsonData)) {
+        createLineChart(jsonData);
+    } else {
+        document.getElementById("returnMessage").innerHTML +="The loaded data is not suitable for a Line chart";
+    }
+  });
+});
+function createLineChart(data) {
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var dataTable = new google.visualization.DataTable();
+
+        // Determine the columns dynamically based on the data keys
+        for (var key in data[0]) {
+            if (key === "Date") {
+                dataTable.addColumn('date', 'Date');
+            } else {
+                dataTable.addColumn('number', key);
+            }
+        }
+
+        // Create rows using the data
+        var rows = [];
+        data.forEach(function (rowData) {
+            var row = [];
+            for (var key in rowData) {
+                if (key === "Date") {
+                    row.push(new Date(rowData[key])); // Convert to date if it's the date column
+                } else {
+                    row.push(parseFloat(rowData[key])); // Convert to a number if it's not the date column
+                }
+            }
+            rows.push(row);
+        });
+
+        dataTable.addRows(rows);
+
+        var options = {
+            title: 'Line Chart Example',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('GraphGoesHere'));
+        chart.draw(dataTable, options);
+    }
+}
+
+
+//pie event listener 
+document.addEventListener('DOMContentLoaded', function () {
+  var PieButton =  document.getElementById("PieButton");
+  PieButton.addEventListener('click', function () {
+    if (isPieChartAllowed(jsonData)) {
+        createPieChart(jsonData);
+    } else {
+        document.getElementById("returnMessage").innerHTML +="The loaded data is not suitable for a Line chart";
+    }
+    });
+});
+
+function isPieChartAllowed(data){
+    return true;
+}
+function createPieChart(data) {
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+   
+    function drawChart() {
+        //create table with Db data IF DB is loaded HERE
+
+        var dataTable = new google.visualization.DataTable();
+
+        // Add columns
+        dataTable.addColumn('string', 'Category');
+        dataTable.addColumn('number', 'Value');
+
+        // Create rows using the data based on the selected value
+        var options;
+        var rows = [];
+        var selectedValue;
+        if(isDBloaded){
+            dbDataTable = sendDatatable();//get the DBData we loaded and create pie charts now
+            //console.log(dbDataTable);
+            dbDataTable.forEach(function(entry) {
+                rows.push([entry[1], entry[4]]);
+            });
+    }else{//else, we arent using DB data, so carry on as normal
+
+        // Determine the selected value from the radio button
+         selectedValue = getSelectedRadioButtonValue('graph');
+
+        data.forEach(function (rowData) {
+            var category;
+            if (selectedValue === 'deathRate') {
+                category = rowData[1] ; // Assuming county names are in the first column
+                rows.push([category, parseFloat(rowData[5])]);
+            } else {
+                category = rowData[1] ; // Assuming county names are in the first column
+                rows.push([category, parseFloat(rowData[4])]);
+            }
+        });
+    }
+    dataTable.addRows(rows);
+        options = {
+            title: selectedValue === 'deathRate' ? 'Death rate per county' : 'Case Rate per county',
+            width: '100%', // Set the chart width to 100% of its container
+            height: '100%', // Set the chart height to 100% of its container
+            chartArea: { left: 10, top: 10, width: '90%', height: '70%' }, // Set chartArea to cover the whole container
+            legend: { position: 'bottom', maxLines: 3 } // Set legend position to the bottom
+        };
+        if(twoCharts){
+            var chartPie = new google.visualization.PieChart(document.getElementById('PieChartGoesHere'));
+        }else{
+            var chartPie = new google.visualization.PieChart(document.getElementById('GraphGoesHere'));
+
+        }
+        chartPie.draw(dataTable, options);
+    }
+}
+
+
+//bar chart stuff now 
+document.addEventListener('DOMContentLoaded', function () {
+  var BarButton =  document.getElementById("BarButton");
+  BarButton.addEventListener('click', function() {
+    if (isBarChartAllowed(jsonData)) {
+        createBarChart(jsonData);
+    } else {
+        document.getElementById("returnMessage").innerHTML +="The loaded data is not suitable for a Line chart";
+    }
+  });
+});
+
+function isBarChartAllowed(data){
+    return true;
+}
+function createBarChart(data) {
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var dataTable = new google.visualization.DataTable();
+
+        // Add columns
+        dataTable.addColumn('string', 'Category');
+        dataTable.addColumn('number', 'Value');
+
+        // Determine the selected value from the radio button
+        var selectedValue = getSelectedRadioButtonValue('graph');
+
+        // Create rows using the data based on the selected value
+        var options;
+        var rows = [];
+        var county;
+        if(isDBloaded){
+            dbDataTable = sendDatatable();
+            dbDataTable.forEach(function(entry) {
+                rows.push([entry[1], entry[4]]);
+
+                options = {
+                    title: 'Count Number Per County',
+                    hAxis: {
+                        title: 'Counties',
+                    },
+                    vAxis: {
+                        title: 'Count'
+                    },
+                    legend: 'none'
+                }
+            });
+        }else{
+            data.forEach(function (rowData) {
+            county = rowData[1];
+            if (selectedValue === 'deathRate') {
+                rows.push([county, parseFloat(rowData[5])]);
+                options = {
+                    title: 'Death Number Per County',
+                    hAxis: {
+                        title: 'Counties',
+                    },
+                    vAxis: {
+                        title: 'Death Num'
+                    },
+                    legend: 'none'
+                }
+            } else {
+                rows.push([county, parseFloat(rowData[4])]);
+                options = {
+                    title: 'Case Number Per County',
+                    hAxis: {
+                        title: 'Counties',
+                    },
+                    vAxis: {
+                        title: 'Case Num'
+                    },
+                    legend: 'none'
+                }
+     
+            }
+        });
+        }
+        
+        
+        dataTable.addRows(rows);
+
+        if(twoCharts){
+            var Barchart = new google.visualization.ColumnChart(document.getElementById('BarChartGoesHere'));
+        }else{
+            var Barchart = new google.visualization.ColumnChart(document.getElementById('GraphGoesHere'));
+
+        }
+        Barchart.draw(dataTable, options);
+    }
+}
+
+//event listener for NEW radio buttons
+var deathradioButton = document.getElementById('death2Graph');
+var caseradioButton = document.getElementById('cases2Graph');
+deathradioButton.addEventListener('click', handleDeathCasesRadioButtons);
+caseradioButton.addEventListener('click', handleDeathCasesRadioButtons);
+
+function handleDeathCasesRadioButtons(){//this draws both functions
+    twoCharts = true;
+    createBarChart(jsonData);
+    createPieChart(jsonData);
+}
+
+// Function to get the selected value from radio buttons
+function getSelectedRadioButtonValue(name) {
+    console.log("this is the first radio function");
+    var radioButtons = document.querySelectorAll('input[type="radio"][name="' + name + '"]');
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            var selectedVal = radioButtons[i].value;
+            if (selectedVal === 'death2Graph'){
+                return 'deathRate';
+            } else if (selectedVal === 'cases2Graph'){
+                return 'caseRate'; //i dont think this matters because its not doing anything
+            }else{
+                return radioButtons[i].value;
+            }
+        }
+    }
+    return null;
+}
+
+
+// Define an array to store coordinates
+//var coordinates = [];
+var countyData = [
+  { name: 'Atlantic', coordinates: [39.6034, -74.5594] },
+  { name: 'Bergen', coordinates: [40.9601, -74.0716] },
+  { name: 'Burlington', coordinates: [39.9142, -74.8457] },
+  { name: 'Camden', coordinates: [39.9259, -75.1196] },
+  { name: 'Cape May', coordinates: [39.1200, -74.8046] },
+  { name: 'Cumberland', coordinates: [39.3912, -75.1679] },
+  { name: 'Essex', coordinates: [40.7879, -74.2455] },
+  { name: 'Gloucester', coordinates: [39.7161, -75.1257] },
+  { name: 'Hudson', coordinates: [40.7312, -74.0780] },
+  { name: 'Hunterdon', coordinates: [40.5684, -74.9398] },
+  { name: 'Mercer', coordinates: [40.2808, -74.7001] },
+  { name: 'Middlesex', coordinates: [40.4417, -74.4146] },
+  { name: 'Monmouth', coordinates: [40.2969, -74.1240] },
+  { name: 'Morris', coordinates: [40.8601, -74.5522] },
+  { name: 'Ocean', coordinates: [39.8994, -74.2624] },
+  { name: 'Passaic', coordinates: [41.0320, -74.3620] },
+  { name: 'Salem', coordinates: [39.5713, -75.4676] },
+  { name: 'Somerset', coordinates: [40.5643, -74.6165] },
+  { name: 'Sussex', coordinates: [41.1384, -74.6915] },
+  { name: 'Union', coordinates: [40.6595, -74.3084] },
+  { name: 'Warren', coordinates: [40.8844, -74.9609] }
+];
+
+
+//map chart stuff now 
+document.addEventListener('DOMContentLoaded', function () {
+  var MapButton =  document.getElementById("MapButton");
+  MapButton.addEventListener('click', function() {
+    if (isMapChartAllowed(jsonData)) {
+        displayMap();
+
+    } else {
+        document.getElementById("returnMessage").innerHTML +="The loaded data is not suitable for a Line chart";
+    }
+  });
+});
+console.log(saveSlider1);
+document.addEventListener('DOMContentLoaded', function() {
+  var userSettingsButton = document.getElementById("userSettingsButton");
+  userSettingsButton.addEventListener('click', function() {
+      if(isDBloaded ){
+        console.log("Settings Button pressed");
+          //now we can go to php and start working on the DB
+          $.ajax({
+            type: 'POST',
+            url: 'updateUserSettings.php',
+            data: {action2: "userSettingsChange",
+        caseAvg: saveSlider1, 
+    deathAvg: saveSlider2
+            },
+            dataType: 'json',
+            success: function(response) {
+                document.getElementById('returnMessage').innerHTML += response;
+              console.log(response);
+            },
+            error: function (error) {
+        console.error("Error in AJAX request", error);
+    }
+          });
+      }else{
+          console.log("button disabled");
+      }
+  });
+});
+
+function isMapChartAllowed(data){
+    return true;
+}
+function displayMap() {
+  // Initialize the map
+  var map = new Microsoft.Maps.Map(document.getElementById('GraphGoesHere'), {
+    center: new Microsoft.Maps.Location(40.0583, -74.4057), // Default location
+     zoom: 8,
+  });
+
+  // Loop through the county data and create pushpins for each location
+  countyData.forEach(function (county) {
+    var coordinates = new Microsoft.Maps.Location(county.coordinates[0], county.coordinates[1]);
+    var pushpin = new Microsoft.Maps.Pushpin(coordinates, { title: county.name });
+    map.entities.push(pushpin);
+  });
+}
+
+
+    // Check if the map chart is allowed and call the displayMap function
+    if (isMapChartAllowed(countyData)) {
+      displayMap();
+    } else {
+      console.log('Map display is not allowed.');
+    }
+
+
+
+// Function to get the selected value from radio buttons
+/*function getSelectedRadioButtonValue(name) {
+    console.log("this is the second radio function");
+
+    var radioButtons = document.querySelectorAll('input[type="radio"][name="' + name + '"]');
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            return radioButtons[i].value;
+        }
+    }
+    return null;
+}*/
+function sendJSONFromCSV(){
+    console.log(jsonData);
+    return (jsonData);
+}
+
+// 
+
+
+</script>
+
+
+
+</body>
+ 
+    
+</html>
